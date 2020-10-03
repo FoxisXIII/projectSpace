@@ -49,6 +49,22 @@ public class @SimpleControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""attach"",
+                    ""type"": ""Button"",
+                    ""id"": ""b0b5af6f-17bb-42f7-a692-5bf96f8990ac"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""throw"",
+                    ""type"": ""Button"",
+                    ""id"": ""1635de8c-b097-47a6-a76d-6654c7911ec7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -134,7 +150,7 @@ public class @SimpleControls : IInputActionCollection, IDisposable
                     ""id"": ""578caa03-6827-4797-adfc-a59770c437fe"",
                     ""path"": ""<Pointer>/delta"",
                     ""interactions"": """",
-                    ""processors"": ""ScaleVector2"",
+                    ""processors"": ""ScaleVector2(x=0.5,y=0.5)"",
                     ""groups"": ""Keyboard + Mouse"",
                     ""action"": ""look"",
                     ""isComposite"": false,
@@ -183,6 +199,50 @@ public class @SimpleControls : IInputActionCollection, IDisposable
                     ""action"": ""run"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8ab7283e-656f-47e7-bf41-cd34ea641086"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard + Mouse"",
+                    ""action"": ""attach"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""64aaf454-ffad-49c0-9e1a-0657a6ae03fc"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""attach"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cd775b68-140c-4807-8ed2-940ad8ee965c"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard + Mouse"",
+                    ""action"": ""throw"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2e9bdf08-cb1b-498c-88c2-7504e9463ab1"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""throw"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -223,6 +283,8 @@ public class @SimpleControls : IInputActionCollection, IDisposable
         m_gameplay_look = m_gameplay.FindAction("look", throwIfNotFound: true);
         m_gameplay_jump = m_gameplay.FindAction("jump", throwIfNotFound: true);
         m_gameplay_run = m_gameplay.FindAction("run", throwIfNotFound: true);
+        m_gameplay_attach = m_gameplay.FindAction("attach", throwIfNotFound: true);
+        m_gameplay_throw = m_gameplay.FindAction("throw", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -276,6 +338,8 @@ public class @SimpleControls : IInputActionCollection, IDisposable
     private readonly InputAction m_gameplay_look;
     private readonly InputAction m_gameplay_jump;
     private readonly InputAction m_gameplay_run;
+    private readonly InputAction m_gameplay_attach;
+    private readonly InputAction m_gameplay_throw;
     public struct GameplayActions
     {
         private @SimpleControls m_Wrapper;
@@ -284,6 +348,8 @@ public class @SimpleControls : IInputActionCollection, IDisposable
         public InputAction @look => m_Wrapper.m_gameplay_look;
         public InputAction @jump => m_Wrapper.m_gameplay_jump;
         public InputAction @run => m_Wrapper.m_gameplay_run;
+        public InputAction @attach => m_Wrapper.m_gameplay_attach;
+        public InputAction @throw => m_Wrapper.m_gameplay_throw;
         public InputActionMap Get() { return m_Wrapper.m_gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -305,6 +371,12 @@ public class @SimpleControls : IInputActionCollection, IDisposable
                 @run.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRun;
                 @run.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRun;
                 @run.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRun;
+                @attach.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnAttach;
+                @attach.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnAttach;
+                @attach.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnAttach;
+                @throw.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnThrow;
+                @throw.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnThrow;
+                @throw.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnThrow;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -321,6 +393,12 @@ public class @SimpleControls : IInputActionCollection, IDisposable
                 @run.started += instance.OnRun;
                 @run.performed += instance.OnRun;
                 @run.canceled += instance.OnRun;
+                @attach.started += instance.OnAttach;
+                @attach.performed += instance.OnAttach;
+                @attach.canceled += instance.OnAttach;
+                @throw.started += instance.OnThrow;
+                @throw.performed += instance.OnThrow;
+                @throw.canceled += instance.OnThrow;
             }
         }
     }
@@ -349,5 +427,7 @@ public class @SimpleControls : IInputActionCollection, IDisposable
         void OnLook(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnRun(InputAction.CallbackContext context);
+        void OnAttach(InputAction.CallbackContext context);
+        void OnThrow(InputAction.CallbackContext context);
     }
 }

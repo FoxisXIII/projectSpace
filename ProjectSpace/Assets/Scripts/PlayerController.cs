@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using Object = System.Object;
 
 public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
 {
@@ -31,6 +33,18 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
     private Vector2 _lookInput;
     private bool _runInput;
 
+    [SerializeField] private LayerMask shootLayerMask;
+
+
+    private bool _isObjectAttached;
+    private bool _attachingObject;
+    private Rigidbody _objectAttached;
+    [SerializeField] private Transform attachingTransform;
+    [SerializeField] private float attachingObjectSpeed;
+    [SerializeField] private Quaternion attachedObjectStartRotation;
+    [SerializeField]
+    private float maxDistance;
+
 
     // Start is called before the first frame update
     void Awake()
@@ -47,9 +61,11 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         Movement();
+        if (_attachingObject)
+            UpdateAttachedObject();
     }
 
     private void Movement()
@@ -105,7 +121,59 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
 
         if ((collisionFlags & CollisionFlags.Above) != 0 && _verticalSpeed > 0.0f)
             _verticalSpeed = 0.0f;
-        // Debug.Log(_onGround);
+    }
+
+    private void Shoot()
+    {
+        Ray lCameraRay = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0.0f));
+        RaycastHit lRaycastHit;
+        if (Physics.Raycast(lCameraRay, out lRaycastHit, maxDistance, shootLayerMask.value))
+            switch (lRaycastHit.collider.tag)
+            {
+                case "Attachable":
+                    _attachingObject = true;
+                    _objectAttached = lRaycastHit.collider.gameObject.GetComponent<Rigidbody>();
+                    lRaycastHit.collider.gameObject.GetComponent<Collider>().enabled = false;
+                    break;
+            }
+    }
+
+    private void UpdateAttachedObject()
+    {
+        Vector3 lEulerAngles = attachingTransform.rotation.eulerAngles;
+        if (!_isObjectAttached)
+        {
+            Vector3 lDirection = attachingTransform.transform.position - _objectAttached.transform.position;
+            float lDistance = lDirection.magnitude;
+            float lMovement = attachingObjectSpeed * Time.deltaTime;
+            _objectAttached.isKinematic = true;
+            if (lMovement >= lDistance)
+            {
+                _isObjectAttached = true;
+                _objectAttached.MovePosition(attachingTransform.position);
+                _objectAttached.MoveRotation(Quaternion.Euler(0.0f, lEulerAngles.y, lEulerAngles.z));
+            }
+            else
+            {
+                lDirection /= lDistance;
+                _objectAttached.MovePosition(_objectAttached.transform.position + lDirection * lMovement);
+            }
+        }
+        else
+        {
+            _objectAttached.MoveRotation(Quaternion.Euler(0.0f, lEulerAngles.y, lEulerAngles.z));
+            _objectAttached.MovePosition(attachingTransform.position);
+        }
+    }
+
+    private void DetachObject(float force)
+    {
+        _isObjectAttached = false;
+        _attachingObject = false;
+        _objectAttached.isKinematic = false;
+        _objectAttached.gameObject.GetComponent<Collider>().enabled = true;
+        _objectAttached.AddForce(attachingTransform.forward * force);
+        _objectAttached = null;
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -121,23 +189,33 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
     public void OnJump(InputAction.CallbackContext context)
     {
         if (_onGround && context.performed)
-        {
-            Debug.Log("Jump");
             _verticalSpeed = jumpSpeed;
-        }
     }
 
     public void OnRun(InputAction.CallbackContext context)
     {
         if (_onGround && context.performed)
-        {
-            Debug.Log("Run");
             _runInput = true;
-        }
+
         else if (context.canceled)
-        {
-            Debug.Log("Stop Run");
             _runInput = false;
-        }
+    }
+
+    public void OnAttach(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+            if (_attachingObject)
+                DetachObject(0);
+            else
+                Shoot();
+    }
+
+    public void OnThrow(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+            if (_attachingObject)
+                DetachObject(1000);
+            else
+                Shoot();
     }
 }
