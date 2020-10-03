@@ -12,7 +12,7 @@ public class EventController : MonoBehaviour
 
     private void Start()
     {
-        _events = new List<IEvent> {new TimeEvent(2), new ColorEvent(10), new TimeEvent(10), new GravityEvent(10)};
+        _events = new List<IEvent> {new TimeEvent(2),new MorseEvent(10), new ColorEvent(10), new TimeEvent(10), new GravityEvent(10)};
         StartEvent();
     }
 
