@@ -42,8 +42,8 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
     [SerializeField] private Transform attachingTransform;
     [SerializeField] private float attachingObjectSpeed;
     [SerializeField] private Quaternion attachedObjectStartRotation;
-    [SerializeField]
-    private float maxDistance;
+    [SerializeField] private float maxDistance;
+    private int _pitchInversion = -1;
 
 
     // Start is called before the first frame update
@@ -58,6 +58,7 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
         _characterController = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        GameController.GetInstance().PlayerController = this;
     }
 
     // Update is called once per frame
@@ -71,7 +72,7 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
     private void Movement()
     {
         //Pitch
-        float mouseAxisY = -_lookInput.y;
+        float mouseAxisY = _pitchInversion * _lookInput.y;
         _pitch += mouseAxisY * pitchRotationalSpeed * Time.deltaTime;
         _pitch = Mathf.Clamp(_pitch, minPitch, maxPitch);
         pitchControllerTransform.localRotation = Quaternion.Euler(_pitch, 0, 0);
@@ -176,6 +177,27 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
         _objectAttached = null;
     }
 
+    public void ResetVerticalSpeed()
+    {
+        _verticalSpeed = 0;
+    }
+
+    public void RotatePlayer()
+    {
+        transform.localScale = new Vector3(transform.localScale.x, -transform.localScale.y, transform.localScale.z);
+        Camera.main.transform.Rotate(0,0,180);
+        _pitchInversion = 1;
+    }
+
+    public void NormalState()
+    {
+        transform.localScale = new Vector3(transform.localScale.x, -transform.localScale.y, transform.localScale.z);
+        Camera.main.transform.Rotate(0,0,180);
+        _pitchInversion = -1;
+    }
+
+    #region Input
+
     public void OnMove(InputAction.CallbackContext context)
     {
         _moveInput = context.ReadValue<Vector2>();
@@ -218,4 +240,6 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
             else
                 Shoot();
     }
+
+    #endregion
 }
