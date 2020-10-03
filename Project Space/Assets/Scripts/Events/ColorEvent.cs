@@ -2,8 +2,6 @@
 
 public class ColorEvent : TimeEvent
 {
-    private bool _once1;
-    private bool _once2;
     private Material _invertMaterial;
 
     public ColorEvent(float maxTime) : base(maxTime)

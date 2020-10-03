@@ -20,11 +20,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4297f6b5-f9fe-46dd-b5b6-3a72e8895f4e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Events/MorseEvent.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Events/MorseEvent.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Events/ForceEvent.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Events/ForceEvent.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Events/SizeEvent.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Events/SizeEvent.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Project Space/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Project Space/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Project Space/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Project Space/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Events/ColorEvent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Events/ColorEvent.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Events/EventController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Events/EventController.cs" afterDir="false" />
     </list>
@@ -55,9 +56,11 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/Example.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/FlashInMorseCode.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/MorseCodeTranslator.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Events/EventController.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Events/MorseEvent.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Events/ColorEvent.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Events/SizeEvent.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Events/ForceEvent.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Events/EventController.cs" />
       </list>
     </option>
   </component>
@@ -101,7 +104,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1601738150909</updated>
-      <workItem from="1601738154945" duration="10884000" />
+      <workItem from="1601738154945" duration="11884000" />
     </task>
     <servers />
   </component>
@@ -125,10 +128,10 @@
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="1114" y="241" key="RiderGenerateDialog" timestamp="1601752790077">
+    <state x="1114" y="241" key="RiderGenerateDialog" timestamp="1601753956264">
       <screen x="0" y="0" width="2560" height="1080" />
     </state>
-    <state x="1114" y="241" key="RiderGenerateDialog/0.0.2560.1080/-1920.0.1920.1080@0.0.2560.1080" timestamp="1601752790077" />
+    <state x="1114" y="241" key="RiderGenerateDialog/0.0.2560.1080/-1920.0.1920.1080@0.0.2560.1080" timestamp="1601753956264" />
     <state x="936" y="250" key="run.anything.popup" timestamp="1601739575759">
       <screen x="0" y="0" width="2560" height="1080" />
     </state>

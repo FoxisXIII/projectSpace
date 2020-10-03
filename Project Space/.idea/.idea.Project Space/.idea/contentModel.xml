@@ -12,9 +12,11 @@
             <e p="ColorEvent.cs" t="Include" />
             <e p="EventAbstract.cs" t="Include" />
             <e p="EventController.cs" t="Include" />
+            <e p="ForceEvent.cs" t="Include" />
             <e p="GravityEvent.cs" t="Include" />
             <e p="IEvent.cs" t="Include" />
             <e p="MorseEvent.cs" t="Include" />
+            <e p="SizeEvent.cs" t="Include" />
             <e p="TimeEvent.cs" t="Include" />
           </e>
           <e p="GameController.cs" t="Include" />
