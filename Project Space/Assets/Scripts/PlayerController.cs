@@ -261,6 +261,37 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
         }
     }
 
+    public Item FindItem(GameObject item)
+    {
+        int counter = 0;
+        foreach (Transform child in inventoryUI.transform)
+        {
+            if (child.GetComponent<TextMeshProUGUI>() == null)
+            {
+                if (item.name.Equals(child.name))
+                    return _itemsArray[counter];
+                counter++;
+            }
+        }
+
+        return null;
+    }
+
+    public void CombineItem(Item item, Item clickItem1)
+    {
+        int counter = 0;
+        foreach (Item child in _itemsArray)
+        {
+            if (clickItem1.name.Equals(child.name))
+                break;
+            counter++;
+        }
+
+        if (counter < _itemsArray.Length)
+            _itemsArray[counter] = item;
+        ReloadInventory();
+    }
+
     #region Input
 
     public void OnMove(InputAction.CallbackContext context)

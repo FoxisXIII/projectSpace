@@ -21,6 +21,7 @@
           </e>
           <e p="GameController.cs" t="Include" />
           <e p="Item.cs" t="Include" />
+          <e p="ItemCombine.cs" t="Include" />
           <e p="ItemMono.cs" t="Include" />
           <e p="MorseCodeTranslator.cs" t="Include" />
           <e p="PlayerController.cs" t="Include" />
