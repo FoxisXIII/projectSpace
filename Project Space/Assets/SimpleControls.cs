@@ -65,6 +65,22 @@ public class @SimpleControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""inventory"",
+                    ""type"": ""Button"",
+                    ""id"": ""4354f61b-66f3-47ff-afd0-cf4232da993a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""saveInventory"",
+                    ""type"": ""Button"",
+                    ""id"": ""f45f3579-8b63-4757-8cfc-99c60cdb31b6"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -243,6 +259,50 @@ public class @SimpleControls : IInputActionCollection, IDisposable
                     ""action"": ""throw"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6d92512c-31b2-4a7c-aba9-fad2e623855b"",
+                    ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard + Mouse"",
+                    ""action"": ""inventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4f84c246-c246-4b4d-a9be-d42d3d6e2e77"",
+                    ""path"": ""<Gamepad>/select"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""inventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""387c7069-f14c-46f2-b5a7-b684a3a19a0e"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard + Mouse"",
+                    ""action"": ""saveInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1d9fc492-1f26-4af6-bfb2-ee1757832a66"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""saveInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -285,6 +345,8 @@ public class @SimpleControls : IInputActionCollection, IDisposable
         m_gameplay_run = m_gameplay.FindAction("run", throwIfNotFound: true);
         m_gameplay_attach = m_gameplay.FindAction("attach", throwIfNotFound: true);
         m_gameplay_throw = m_gameplay.FindAction("throw", throwIfNotFound: true);
+        m_gameplay_inventory = m_gameplay.FindAction("inventory", throwIfNotFound: true);
+        m_gameplay_saveInventory = m_gameplay.FindAction("saveInventory", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -340,6 +402,8 @@ public class @SimpleControls : IInputActionCollection, IDisposable
     private readonly InputAction m_gameplay_run;
     private readonly InputAction m_gameplay_attach;
     private readonly InputAction m_gameplay_throw;
+    private readonly InputAction m_gameplay_inventory;
+    private readonly InputAction m_gameplay_saveInventory;
     public struct GameplayActions
     {
         private @SimpleControls m_Wrapper;
@@ -350,6 +414,8 @@ public class @SimpleControls : IInputActionCollection, IDisposable
         public InputAction @run => m_Wrapper.m_gameplay_run;
         public InputAction @attach => m_Wrapper.m_gameplay_attach;
         public InputAction @throw => m_Wrapper.m_gameplay_throw;
+        public InputAction @inventory => m_Wrapper.m_gameplay_inventory;
+        public InputAction @saveInventory => m_Wrapper.m_gameplay_saveInventory;
         public InputActionMap Get() { return m_Wrapper.m_gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -377,6 +443,12 @@ public class @SimpleControls : IInputActionCollection, IDisposable
                 @throw.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnThrow;
                 @throw.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnThrow;
                 @throw.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnThrow;
+                @inventory.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnInventory;
+                @inventory.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnInventory;
+                @inventory.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnInventory;
+                @saveInventory.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnSaveInventory;
+                @saveInventory.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnSaveInventory;
+                @saveInventory.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnSaveInventory;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -399,6 +471,12 @@ public class @SimpleControls : IInputActionCollection, IDisposable
                 @throw.started += instance.OnThrow;
                 @throw.performed += instance.OnThrow;
                 @throw.canceled += instance.OnThrow;
+                @inventory.started += instance.OnInventory;
+                @inventory.performed += instance.OnInventory;
+                @inventory.canceled += instance.OnInventory;
+                @saveInventory.started += instance.OnSaveInventory;
+                @saveInventory.performed += instance.OnSaveInventory;
+                @saveInventory.canceled += instance.OnSaveInventory;
             }
         }
     }
@@ -429,5 +507,7 @@ public class @SimpleControls : IInputActionCollection, IDisposable
         void OnRun(InputAction.CallbackContext context);
         void OnAttach(InputAction.CallbackContext context);
         void OnThrow(InputAction.CallbackContext context);
+        void OnInventory(InputAction.CallbackContext context);
+        void OnSaveInventory(InputAction.CallbackContext context);
     }
 }

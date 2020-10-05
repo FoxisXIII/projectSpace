@@ -41,6 +41,7 @@ public class MorseCodeTranslator : MonoBehaviour
 
     private void OnEnable()
     {
+        _audioSource = GetComponent<AudioSource>();
         StartCoroutine(Flash(objectToUse, textToShow, dotTime));
     }
 
@@ -110,7 +111,5 @@ public class MorseCodeTranslator : MonoBehaviour
                 }
             }
         }
-
-        Debug.Log(convertedText);
     }
 }

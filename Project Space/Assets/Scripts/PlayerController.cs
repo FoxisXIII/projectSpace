@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -45,6 +47,11 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
     [SerializeField] private float maxDistance;
     private int _yawInversion = 1;
 
+    [SerializeField] private GameObject inventoryUI;
+    [SerializeField] private GameObject normalUI;
+    private bool _stopTime;
+    private Item[] _itemsArray;
+
 
     // Start is called before the first frame update
     void Awake()
@@ -59,12 +66,14 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         GameController.GetInstance().PlayerController = this;
+        _itemsArray = new Item[inventoryUI.transform.childCount - 1];
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        Movement();
+        if (!_stopTime)
+            Movement();
         if (_attachingObject)
             UpdateAttachedObject();
     }
@@ -142,15 +151,19 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
 
     private void Shoot()
     {
-        Ray lCameraRay = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0.0f));
-        RaycastHit lRaycastHit;
-        if (Physics.Raycast(lCameraRay, out lRaycastHit, maxDistance, shootLayerMask.value))
-            switch (lRaycastHit.collider.tag)
+        Ray cameraRay = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0.0f));
+        RaycastHit raycastHit;
+        if (Physics.Raycast(cameraRay, out raycastHit, maxDistance, shootLayerMask.value))
+            switch (raycastHit.collider.tag)
             {
                 case "Attachable":
                     _attachingObject = true;
-                    _objectAttached = lRaycastHit.collider.gameObject.GetComponent<Rigidbody>();
-                    lRaycastHit.collider.gameObject.GetComponent<Collider>().enabled = false;
+                    _objectAttached = raycastHit.collider.gameObject.GetComponent<Rigidbody>();
+                    raycastHit.collider.gameObject.GetComponent<Collider>().enabled = false;
+                    break;
+                case "Item":
+                    if (AddToItemList(raycastHit.collider.gameObject.GetComponent<ItemMono>())) ;
+                    Destroy(raycastHit.collider.gameObject);
                     break;
             }
     }
@@ -221,6 +234,32 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
     //         yield return new WaitForSeconds(Time.deltaTime);
     //     }
     // }
+    private bool AddToItemList(ItemMono itemMono)
+    {
+        for (int i = 0; i < _itemsArray.Length; i++)
+        {
+            if (_itemsArray[i] == null)
+            {
+                _itemsArray[i] = new Item(itemMono.inventoryImage, itemMono.name);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void ReloadInventory()
+    {
+        for (int i = 0; i < _itemsArray.Length; i++)
+        {
+            if (_itemsArray[i] != null)
+            {
+                var uiChild = inventoryUI.transform.GetChild(i + 1);
+                uiChild.GetComponent<Image>().sprite = _itemsArray[i].inventoryImage;
+                uiChild.GetComponent<Button>().interactable = true;
+            }
+        }
+    }
 
     #region Input
 
@@ -265,6 +304,38 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
                 DetachObject(1000);
             else
                 Shoot();
+    }
+
+    public void OnInventory(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            normalUI.SetActive(inventoryUI.activeInHierarchy);
+            inventoryUI.SetActive(!normalUI.activeInHierarchy);
+            if (inventoryUI.activeInHierarchy)
+            {
+                Time.timeScale = 0;
+                _stopTime = true;
+                Cursor.lockState = CursorLockMode.Confined;
+                Cursor.visible = true;
+            }
+            else
+            {
+                Time.timeScale = 1;
+                _stopTime = false;
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+        }
+    }
+
+    public void OnSaveInventory(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            Shoot();
+            ReloadInventory();
+        }
     }
 
     #endregion
