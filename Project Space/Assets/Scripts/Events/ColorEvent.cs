@@ -2,30 +2,36 @@
 
 public class ColorEvent : TimeEvent
 {
-    private bool _once1;
-    private bool _once2;
-    private GameObject _invertGameObject;
+    private Material _invertMaterial;
 
     public ColorEvent(float maxTime) : base(maxTime)
     {
-        _invertGameObject = GameObject.FindGameObjectWithTag("Inversion");
+        _invertMaterial = GameObject.FindGameObjectWithTag("Inversion").GetComponent<MeshRenderer>().material;
     }
 
     public override void Initializer()
     {
         base.Initializer();
-        _invertGameObject.GetComponent<MeshRenderer>().enabled = true;
     }
 
     public override void Update()
     {
         base.Update();
+        if (Timer <= 1)
+        {
+            _invertMaterial.color = new Color(1, 1, 1, 1) * Timer;
+        }
+
+        if (Timer >= _maxTime)
+        {
+            _invertMaterial.color = new Color(1, 1, 1, 1) * (_maxTime - Timer);
+        }
     }
 
     public override void Destructor()
     {
         base.Destructor();
-        _invertGameObject.GetComponent<MeshRenderer>().enabled = false;
+        _invertMaterial.color = new Color(1, 1, 1, 1);
     }
 
     public override string EventName()

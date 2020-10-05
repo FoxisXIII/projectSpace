@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -43,7 +45,12 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
     [SerializeField] private float attachingObjectSpeed;
     [SerializeField] private Quaternion attachedObjectStartRotation;
     [SerializeField] private float maxDistance;
-    private int _pitchInversion = -1;
+    private int _yawInversion = 1;
+
+    [SerializeField] private GameObject inventoryUI;
+    [SerializeField] private GameObject normalUI;
+    private bool _stopTime;
+    private Item[] _itemsArray;
 
 
     // Start is called before the first frame update
@@ -59,12 +66,14 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         GameController.GetInstance().PlayerController = this;
+        _itemsArray = new Item[inventoryUI.transform.childCount - 1];
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        Movement();
+        if (!_stopTime)
+            Movement();
         if (_attachingObject)
             UpdateAttachedObject();
     }
@@ -72,14 +81,14 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
     private void Movement()
     {
         //Pitch
-        float mouseAxisY = _pitchInversion * _lookInput.y;
+        float mouseAxisY = -_lookInput.y;
         _pitch += mouseAxisY * pitchRotationalSpeed * Time.deltaTime;
         _pitch = Mathf.Clamp(_pitch, minPitch, maxPitch);
         pitchControllerTransform.localRotation = Quaternion.Euler(_pitch, 0, 0);
 
 
         //Yaw
-        float mouseAxisX = _lookInput.x;
+        float mouseAxisX = _yawInversion * _lookInput.x;
         _yaw += mouseAxisX * yawRotationalSpeed * Time.deltaTime;
         transform.localRotation = Quaternion.Euler(0, _yaw, 0);
         //Movement
@@ -102,7 +111,7 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
         movement = movement * Time.deltaTime * speed;
 
         //Gravity
-        _verticalSpeed += Physics.gravity.y * Time.deltaTime;
+        _verticalSpeed += (Physics.gravity.y * 1.5f) * Time.deltaTime;
         movement.y = _verticalSpeed * Time.deltaTime;
 
         float lSpeedMultiplier = 1f;
@@ -112,29 +121,49 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
         movement *= Time.deltaTime * speed * lSpeedMultiplier;
 
         CollisionFlags collisionFlags = _characterController.Move(movement);
-        if ((collisionFlags & CollisionFlags.Below) != 0)
+        if (_yawInversion == 1)
         {
-            _onGround = true;
-            _verticalSpeed = 0.0f;
+            if ((collisionFlags & CollisionFlags.Below) != 0)
+            {
+                _onGround = true;
+                _verticalSpeed = 0.0f;
+            }
+            else
+                _onGround = false;
+
+            if ((collisionFlags & CollisionFlags.Above) != 0 && _verticalSpeed > 0.0f)
+                _verticalSpeed = 0.0f;
         }
         else
-            _onGround = false;
+        {
+            if ((collisionFlags & CollisionFlags.Above) != 0)
+            {
+                _onGround = true;
+                _verticalSpeed = 0.0f;
+            }
+            else
+                _onGround = false;
 
-        if ((collisionFlags & CollisionFlags.Above) != 0 && _verticalSpeed > 0.0f)
-            _verticalSpeed = 0.0f;
+            if ((collisionFlags & CollisionFlags.Below) != 0 && _verticalSpeed > 0.0f)
+                _verticalSpeed = 0.0f;
+        }
     }
 
     private void Shoot()
     {
-        Ray lCameraRay = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0.0f));
-        RaycastHit lRaycastHit;
-        if (Physics.Raycast(lCameraRay, out lRaycastHit, maxDistance, shootLayerMask.value))
-            switch (lRaycastHit.collider.tag)
+        Ray cameraRay = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0.0f));
+        RaycastHit raycastHit;
+        if (Physics.Raycast(cameraRay, out raycastHit, maxDistance, shootLayerMask.value))
+            switch (raycastHit.collider.tag)
             {
                 case "Attachable":
                     _attachingObject = true;
-                    _objectAttached = lRaycastHit.collider.gameObject.GetComponent<Rigidbody>();
-                    lRaycastHit.collider.gameObject.GetComponent<Collider>().enabled = false;
+                    _objectAttached = raycastHit.collider.gameObject.GetComponent<Rigidbody>();
+                    raycastHit.collider.gameObject.GetComponent<Collider>().enabled = false;
+                    break;
+                case "Item":
+                    if (AddToItemList(raycastHit.collider.gameObject.GetComponent<ItemMono>())) ;
+                    Destroy(raycastHit.collider.gameObject);
                     break;
             }
     }
@@ -182,18 +211,85 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
         _verticalSpeed = 0;
     }
 
-    public void RotatePlayer()
+    public void InversePlayer()
     {
         transform.localScale = new Vector3(transform.localScale.x, -transform.localScale.y, transform.localScale.z);
-        Camera.main.transform.Rotate(0,0,180);
-        _pitchInversion = 1;
+        // StartCoroutine(RotatePlayer(180, 50));
+        _yawInversion = -1;
     }
 
     public void NormalState()
     {
         transform.localScale = new Vector3(transform.localScale.x, -transform.localScale.y, transform.localScale.z);
-        Camera.main.transform.Rotate(0,0,180);
-        _pitchInversion = -1;
+        Camera.main.transform.Rotate(0, 0, 180);
+        _yawInversion = 1;
+    }
+
+    // private IEnumerator RotatePlayer(float angle, float speed)
+    // {
+    //     while (Camera.main.transform.rotation.z != -1)
+    //     {
+    //         Debug.Log(Camera.main.transform.rotation.z);
+    //         Camera.main.transform.Rotate(0, 0, speed * Time.deltaTime);
+    //         yield return new WaitForSeconds(Time.deltaTime);
+    //     }
+    // }
+    private bool AddToItemList(ItemMono itemMono)
+    {
+        for (int i = 0; i < _itemsArray.Length; i++)
+        {
+            if (_itemsArray[i] == null)
+            {
+                _itemsArray[i] = new Item(itemMono.inventoryImage, itemMono.name);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void ReloadInventory()
+    {
+        for (int i = 0; i < _itemsArray.Length; i++)
+        {
+            if (_itemsArray[i] != null)
+            {
+                var uiChild = inventoryUI.transform.GetChild(i + 1);
+                uiChild.GetComponent<Image>().sprite = _itemsArray[i].inventoryImage;
+                uiChild.GetComponent<Button>().interactable = true;
+            }
+        }
+    }
+
+    public Item FindItem(GameObject item)
+    {
+        int counter = 0;
+        foreach (Transform child in inventoryUI.transform)
+        {
+            if (child.GetComponent<TextMeshProUGUI>() == null)
+            {
+                if (item.name.Equals(child.name))
+                    return _itemsArray[counter];
+                counter++;
+            }
+        }
+
+        return null;
+    }
+
+    public void CombineItem(Item item, Item clickItem1)
+    {
+        int counter = 0;
+        foreach (Item child in _itemsArray)
+        {
+            if (clickItem1.name.Equals(child.name))
+                break;
+            counter++;
+        }
+
+        if (counter < _itemsArray.Length)
+            _itemsArray[counter] = item;
+        ReloadInventory();
     }
 
     #region Input
@@ -239,6 +335,38 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
                 DetachObject(1000);
             else
                 Shoot();
+    }
+
+    public void OnInventory(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            normalUI.SetActive(inventoryUI.activeInHierarchy);
+            inventoryUI.SetActive(!normalUI.activeInHierarchy);
+            if (inventoryUI.activeInHierarchy)
+            {
+                Time.timeScale = 0;
+                _stopTime = true;
+                Cursor.lockState = CursorLockMode.Confined;
+                Cursor.visible = true;
+            }
+            else
+            {
+                Time.timeScale = 1;
+                _stopTime = false;
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+        }
+    }
+
+    public void OnSaveInventory(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            Shoot();
+            ReloadInventory();
+        }
     }
 
     #endregion
