@@ -43,7 +43,7 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
     [SerializeField] private float attachingObjectSpeed;
     [SerializeField] private Quaternion attachedObjectStartRotation;
     [SerializeField] private float maxDistance;
-    private int _pitchInversion = -1;
+    private int _yawInversion = 1;
 
 
     // Start is called before the first frame update
@@ -72,14 +72,14 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
     private void Movement()
     {
         //Pitch
-        float mouseAxisY = _pitchInversion * _lookInput.y;
+        float mouseAxisY = -_lookInput.y;
         _pitch += mouseAxisY * pitchRotationalSpeed * Time.deltaTime;
         _pitch = Mathf.Clamp(_pitch, minPitch, maxPitch);
         pitchControllerTransform.localRotation = Quaternion.Euler(_pitch, 0, 0);
 
 
         //Yaw
-        float mouseAxisX = _lookInput.x;
+        float mouseAxisX = _yawInversion * _lookInput.x;
         _yaw += mouseAxisX * yawRotationalSpeed * Time.deltaTime;
         transform.localRotation = Quaternion.Euler(0, _yaw, 0);
         //Movement
@@ -102,7 +102,7 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
         movement = movement * Time.deltaTime * speed;
 
         //Gravity
-        _verticalSpeed += Physics.gravity.y * Time.deltaTime;
+        _verticalSpeed += (Physics.gravity.y * 1.5f) * Time.deltaTime;
         movement.y = _verticalSpeed * Time.deltaTime;
 
         float lSpeedMultiplier = 1f;
@@ -112,16 +112,32 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
         movement *= Time.deltaTime * speed * lSpeedMultiplier;
 
         CollisionFlags collisionFlags = _characterController.Move(movement);
-        if ((collisionFlags & CollisionFlags.Below) != 0)
+        if (_yawInversion == 1)
         {
-            _onGround = true;
-            _verticalSpeed = 0.0f;
+            if ((collisionFlags & CollisionFlags.Below) != 0)
+            {
+                _onGround = true;
+                _verticalSpeed = 0.0f;
+            }
+            else
+                _onGround = false;
+
+            if ((collisionFlags & CollisionFlags.Above) != 0 && _verticalSpeed > 0.0f)
+                _verticalSpeed = 0.0f;
         }
         else
-            _onGround = false;
+        {
+            if ((collisionFlags & CollisionFlags.Above) != 0)
+            {
+                _onGround = true;
+                _verticalSpeed = 0.0f;
+            }
+            else
+                _onGround = false;
 
-        if ((collisionFlags & CollisionFlags.Above) != 0 && _verticalSpeed > 0.0f)
-            _verticalSpeed = 0.0f;
+            if ((collisionFlags & CollisionFlags.Below) != 0 && _verticalSpeed > 0.0f)
+                _verticalSpeed = 0.0f;
+        }
     }
 
     private void Shoot()
@@ -182,19 +198,29 @@ public class PlayerController : MonoBehaviour, SimpleControls.IGameplayActions
         _verticalSpeed = 0;
     }
 
-    public void RotatePlayer()
+    public void InversePlayer()
     {
         transform.localScale = new Vector3(transform.localScale.x, -transform.localScale.y, transform.localScale.z);
-        Camera.main.transform.Rotate(0,0,180);
-        _pitchInversion = 1;
+        // StartCoroutine(RotatePlayer(180, 50));
+        _yawInversion = -1;
     }
 
     public void NormalState()
     {
         transform.localScale = new Vector3(transform.localScale.x, -transform.localScale.y, transform.localScale.z);
-        Camera.main.transform.Rotate(0,0,180);
-        _pitchInversion = -1;
+        Camera.main.transform.Rotate(0, 0, 180);
+        _yawInversion = 1;
     }
+
+    // private IEnumerator RotatePlayer(float angle, float speed)
+    // {
+    //     while (Camera.main.transform.rotation.z != -1)
+    //     {
+    //         Debug.Log(Camera.main.transform.rotation.z);
+    //         Camera.main.transform.Rotate(0, 0, speed * Time.deltaTime);
+    //         yield return new WaitForSeconds(Time.deltaTime);
+    //     }
+    // }
 
     #region Input
 

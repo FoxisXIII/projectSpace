@@ -8,12 +8,14 @@ public class GravityEvent : TimeEvent
     private Vector3 _finalGravity;
     private bool _once1;
     private bool _once2;
+    private GameObject[] _changeSize;
 
     public GravityEvent(float maxTime) : base(maxTime)
     {
         _initialGravity = Physics.gravity / 10;
         _floatingGravity = Vector3.zero;
         _finalGravity = Physics.gravity;
+        _changeSize = GameObject.FindGameObjectsWithTag("Attachable");
     }
 
     public override void Initializer()
@@ -25,19 +27,28 @@ public class GravityEvent : TimeEvent
     public override void Update()
     {
         base.Update();
-        if (Timer >= (_maxTime / 25) && !_once1)
+        if (Timer >= (_maxTime / 10) && !_once1)
         {
+            _once1 = true;
             GameController.GetInstance().PlayerController.ResetVerticalSpeed();
             Physics.gravity = _floatingGravity;
-            _once1 = true;
+            foreach (GameObject gameObject in _changeSize)
+            {
+                gameObject.GetComponent<Rigidbody>().isKinematic = true;
+            }
         }
 
         //Random movement
         if (Timer >= (_maxTime / 4) && !_once2)
         {
-            Physics.gravity = -_finalGravity;
             _once2 = true;
-            GameController.GetInstance().PlayerController.RotatePlayer();
+            Physics.gravity = -_finalGravity;
+            foreach (GameObject gameObject in _changeSize)
+            {
+                gameObject.GetComponent<Rigidbody>().isKinematic = false;
+            }
+
+            GameController.GetInstance().PlayerController.InversePlayer();
         }
     }
 

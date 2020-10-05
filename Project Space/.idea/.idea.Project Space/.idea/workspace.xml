@@ -20,14 +20,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4297f6b5-f9fe-46dd-b5b6-3a72e8895f4e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Events/ForceEvent.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Events/ForceEvent.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Events/SizeEvent.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Events/SizeEvent.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Project Space/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Project Space/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Project Space/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Project Space/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Events/ColorEvent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Events/ColorEvent.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/New Material - còpia (2).mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/New Material - còpia (2).mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Events/EventController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Events/EventController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Events/GravityEvent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Events/GravityEvent.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/PlayerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/PlayerController.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,6 +38,7 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/../../Scoreboard/Scoreboard/Assets/Scripts/Scoreboard/ScoreboardGUI.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/MorseCodeTranslator.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../Universitat/ProjectTree/ProjectTree/Assets/Scripts/OverviewController.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -47,9 +46,7 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/Events/IEvent.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Events/Event.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/GameController.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/PlayerController.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Events/TimeEvent.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Events/GravityEvent.cs" />
         <option value="$PROJECT_DIR$/Assets/ddInvertMapped.shader" />
         <option value="$PROJECT_DIR$/Assets/InvertColor.shader" />
         <option value="$PROJECT_DIR$/Assets/Scripts/AudioProcessor.cs" />
@@ -60,7 +57,9 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/Events/ColorEvent.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Events/SizeEvent.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Events/ForceEvent.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Events/GravityEvent.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Events/EventController.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/PlayerController.cs" />
       </list>
     </option>
   </component>
@@ -104,7 +103,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1601738150909</updated>
-      <workItem from="1601738154945" duration="11884000" />
+      <workItem from="1601738154945" duration="13813000" />
     </task>
     <servers />
   </component>
